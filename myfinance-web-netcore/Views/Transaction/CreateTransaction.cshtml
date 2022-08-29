@@ -1,6 +1,20 @@
 @using System.Globalization
 @model myfinance_web_netcore.Models.TransactionModel
 
+@code {
+ int currentType = string.Empty;
+
+ void GetCurrentType()
+ {
+     return currentType;
+ }
+
+ void SetCurrentType(ChangeEventArgs e)
+ {
+     currentCount = e.value;
+ }
+}
+
 @{
     ViewData["Title"] = "Registrar transação financeira";
 
@@ -10,6 +24,7 @@
     string vType = string.Empty;
     string vHistory = string.Empty;
     int vAccountPlanId = 0;
+    string vPaymentMethod = string.Empty;
     
     try {
         vId = int.Parse(@ViewBag.Transaction.Id.ToString());
@@ -17,6 +32,7 @@
         vType = @ViewBag.Transaction.Type.ToString();
         vHistory = @ViewBag.Transaction.History.ToString();
         vAccountPlanId = int.Parse(@ViewBag.Transaction.AccountPlanId.ToString());
+        vPaymentMethod = @ViewBag.Transaction.PaymentMethod.ToString();
 
         CultureInfo cultureInfo = CultureInfo.InvariantCulture;
         vValue = @ViewBag.Transaction.Value.ToString(cultureInfo);
@@ -38,7 +54,7 @@
 
         <div class="form-group">
            <label>Tipo:</label><br>
-            <input type="text" class="form-control" asp-for="Type" value="@vType"><br>
+            <input type="text" class="form-control" asp-for="Type" value="@vType" @onchange="SetCurrentType"><br>
         </div>
         
        <div class="form-group">
@@ -69,6 +85,16 @@
                         }
                     }
                 }
+            </select>
+        </div>
+        <div class="form-group" style="display: { @vType.ToString() == 'D'.ToString() ? "none" : "block" };">
+            <label>Tipo de pagamento:</label>
+            <select asp-for="PaymentMethod" class="form-control">
+                <option selected value="Dinheiro">Dinheiro</option>
+                <option selected value="Débito">Débito</option>
+                <option selected value="Crédito">Crédito</option>
+                <option selected value="PIX">PIX</option>
+                <option selected value="Boleto">Boleto</option>
             </select>
         </div>
 

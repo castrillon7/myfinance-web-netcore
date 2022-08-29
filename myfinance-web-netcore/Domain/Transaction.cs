@@ -11,9 +11,12 @@ namespace myfinance_web_netcore.Domain
             DAL dalInstance = DAL.GetInstance;
             dalInstance.Connect();
 
-            string sql = "INSERT INTO TRANSACTIONS(DATE, VALUE, TYPE, HISTORY, ACCOUNT_PLAN_ID) " + 
+            string sql = "INSERT INTO TRANSACTIONS(DATE, VALUE, TYPE, HISTORY, ACCOUNT_PLAN_ID, PAYMENT_METHOD) " + 
                 $"VALUES ('{form.Date.ToString("yyyy-MM-dd")}'," +
-                $"{form.Value}, '{form.Type}', '{form.History}', {form.AccountPlanId})";
+                $"{form.Value}, '{form.Type}', '{form.History}', {form.AccountPlanId}, '{form.PaymentMethod}')";
+
+            Console.WriteLine($"hmm: {form}");
+            Console.WriteLine($"asd: {sql}");
 
             dalInstance.ExecuteCommand(sql);
             dalInstance.Disconnect();
@@ -26,7 +29,7 @@ namespace myfinance_web_netcore.Domain
 
             string sql = $"UPDATE TRANSACTIONS SET DATE = '{form.Date.ToString("yyyy-MM-dd")}'," +
                 $"VALUE = {form.Value}, TYPE = '{form.Type}', HISTORY = '{form.History}', " +
-                $"ACCOUNT_PLAN_ID = {form.AccountPlanId} WHERE ID = {form.Id}";
+                $"ACCOUNT_PLAN_ID = {form.AccountPlanId}, PAYMENT_METHOD = {form.PaymentMethod} WHERE ID = {form.Id}";
 
             dalInstance.ExecuteCommand(sql);
             dalInstance.Disconnect();
@@ -46,7 +49,7 @@ namespace myfinance_web_netcore.Domain
             DAL dalInstance = DAL.GetInstance;
             dalInstance.Connect();
 
-            string sql = $"SELECT ID, DATE, VALUE, TYPE, HISTORY, ACCOUNT_PLAN_ID FROM TRANSACTIONS WHERE ID = '{id}'";
+            string sql = $"SELECT ID, DATE, VALUE, TYPE, HISTORY, ACCOUNT_PLAN_ID, PAYMENT_METHOD FROM TRANSACTIONS WHERE ID = '{id}'";
             DataTable dataTable = dalInstance.Select(sql);
 
             TransactionModel transaction = new TransactionModel()
@@ -56,7 +59,8 @@ namespace myfinance_web_netcore.Domain
                 Value = decimal.Parse(dataTable.Rows[0]["VALUE"].ToString()),
                 Type = dataTable.Rows[0]["TYPE"].ToString(),
                 History = dataTable.Rows[0]["HISTORY"].ToString(),
-                AccountPlanId = int.Parse(dataTable.Rows[0]["ACCOUNT_PLAN_ID"].ToString())
+                AccountPlanId = int.Parse(dataTable.Rows[0]["ACCOUNT_PLAN_ID"].ToString()),
+                PaymentMethod = dataTable.Rows[0]["PAYMENT_METHOD"].ToString()
             };
 
             dalInstance.Disconnect();
@@ -70,7 +74,7 @@ namespace myfinance_web_netcore.Domain
             DAL dalInstance = DAL.GetInstance;
             dalInstance.Connect();
 
-            string sql = "SELECT ID, DATE, VALUE, TYPE, HISTORY, ACCOUNT_PLAN_ID FROM TRANSACTIONS";
+            string sql = "SELECT ID, DATE, VALUE, TYPE, HISTORY, ACCOUNT_PLAN_ID, PAYMENT_METHOD FROM TRANSACTIONS";
             DataTable dataTable = dalInstance.Select(sql);
 
             for (int i = 0; i < dataTable.Rows.Count; i++)
@@ -82,7 +86,8 @@ namespace myfinance_web_netcore.Domain
                     Value = decimal.Parse(dataTable.Rows[i]["VALUE"].ToString()),
                     Type = dataTable.Rows[i]["TYPE"].ToString(),
                     History = dataTable.Rows[i]["HISTORY"].ToString(),
-                    AccountPlanId = int.Parse(dataTable.Rows[i]["ACCOUNT_PLAN_ID"].ToString())
+                    AccountPlanId = int.Parse(dataTable.Rows[i]["ACCOUNT_PLAN_ID"].ToString()),
+                    PaymentMethod = dataTable.Rows[i]["PAYMENT_METHOD"].ToString()
                 };
 
                 transactions.Add(transaction);
