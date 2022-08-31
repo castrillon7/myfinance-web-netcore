@@ -1,20 +1,6 @@
 @using System.Globalization
 @model myfinance_web_netcore.Models.TransactionModel
 
-@code {
- int currentType = string.Empty;
-
- void GetCurrentType()
- {
-     return currentType;
- }
-
- void SetCurrentType(ChangeEventArgs e)
- {
-     currentCount = e.value;
- }
-}
-
 @{
     ViewData["Title"] = "Registrar transação financeira";
 
@@ -25,10 +11,11 @@
     string vHistory = string.Empty;
     int vAccountPlanId = 0;
     string vPaymentMethod = string.Empty;
-    
-    try {
+
+    try
+    {
         vId = int.Parse(@ViewBag.Transaction.Id.ToString());
-        vDate = DateTime.Parse(@ViewBag.Transaction.Date.ToString()).ToString("yyyy-MM-dd");        
+        vDate = DateTime.Parse(@ViewBag.Transaction.Date.ToString()).ToString("yyyy-MM-dd");
         vType = @ViewBag.Transaction.Type.ToString();
         vHistory = @ViewBag.Transaction.History.ToString();
         vAccountPlanId = int.Parse(@ViewBag.Transaction.AccountPlanId.ToString());
@@ -37,7 +24,7 @@
         CultureInfo cultureInfo = CultureInfo.InvariantCulture;
         vValue = @ViewBag.Transaction.Value.ToString(cultureInfo);
     }
-    catch {}
+    catch { }
 }
 
 <h1>@ViewData["Title"]</h1>
@@ -53,27 +40,27 @@
         </div>
 
         <div class="form-group">
-           <label>Tipo:</label><br>
-            <input type="text" class="form-control" asp-for="Type" value="@vType" @onchange="SetCurrentType"><br>
+            <label>Tipo:</label><br>
+            <input id="transaction-type" type="text" class="form-control" asp-for="Type" value="@vType"><br>
         </div>
-        
-       <div class="form-group">
-           <label>Valor:</label><br>
+
+        <div class="form-group">
+            <label>Valor:</label><br>
             <input type="text" class="form-control" asp-for="Value" step="0.01" value="@vValue">
             <span asp-validation-for="Value" class="text-danger"></span>
         </div>
 
         <div class="form-group">
-           <label>Histórico:</label><br>
+            <label>Histórico:</label><br>
             @Html.TextArea("History", vHistory, new { @class = "form-control" })
             <span asp-validation-for="History" class="text-danger"></span>
         </div>
-        
+
         <div class="form-group">
             <label>Plano de contas:</label>
             <select asp-for="AccountPlanId" class="form-control">
                 @{
-                    foreach(AccountPlanModel accountPlan in (List<AccountPlanModel>)ViewBag.AccountPlans)
+                    foreach (AccountPlanModel accountPlan in (List<AccountPlanModel>)ViewBag.AccountPlans)
                     {
                         if (accountPlan.Id == vAccountPlanId)
                         {
@@ -87,7 +74,8 @@
                 }
             </select>
         </div>
-        <div class="form-group" style="display: { @vType.ToString() == 'D'.ToString() ? "none" : "block" };">
+
+        <div id="payment-method" class="form-group">
             <label>Tipo de pagamento:</label>
             <select asp-for="PaymentMethod" class="form-control">
                 <option selected value="Dinheiro">Dinheiro</option>
@@ -101,3 +89,25 @@
         <button type="submit" class="btn btn-block btn-success">Registrar</button>
     </form>
 </div>
+
+<script>
+    window.onload = function () {
+        const type = document.getElementById('transaction-type').value;
+
+        if (type.toUpperCase() === 'D')
+            document.getElementById('payment-method').style.display = 'block';
+    }
+
+    document.getElementById('transaction-type').onchange = function (evt) {
+        const displayType = evt.target.value.toUpperCase() === 'D' ? 'block' : 'none';
+
+        document.getElementById('payment-method').style.display = displayType;
+        document.getElementById('payment-method').value = null;
+    }
+</script>
+
+<style>
+    #payment-method {
+        display: none;
+    }
+</style>

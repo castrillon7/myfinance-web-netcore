@@ -15,7 +15,7 @@ create table transactions(
 	account_plan_id int not null,
 	primary key(id),
 	foreign key(account_plan_id) references account_plans,
-	payment_method VARCHAR(10) NOT NULL CHECK (
+	payment_method VARCHAR(8) CHECK (
 		payment_method IN('Dinheiro', 'Débito', 'Crédito', 'PIX', 'Boleto')
 	),
 );
